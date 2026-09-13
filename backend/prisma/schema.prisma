@@ -1,0 +1,272 @@
+// cspell:ignore Faculdade
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Get a free hosted Postgres database in seconds: `npx create-db`
+
+generator client {
+  provider = "prisma-client"
+  output   = "../src/generated/prisma"
+}
+
+datasource db {
+  provider = "mysql"
+}
+
+model Faculdade {
+  id           Int      @id @default(autoincrement())
+  nome         String
+  sigla        String   @unique
+  ativo        Boolean  @default(true)
+  criadoEm     DateTime @default(now())
+  atualizadoEm DateTime @updatedAt
+
+  cursos Curso[]
+
+  @@map("faculdades")
+}
+
+model Curso {
+  id     Int     @id @default(autoincrement())
+  nome   String
+  codigo String  @unique
+  ativo  Boolean @default(true)
+
+  faculdadeId Int
+  faculdade   Faculdade @relation(fields: [faculdadeId], references: [id])
+
+  estudantes Estudante[]
+
+  criadoEm     DateTime @default(now())
+  atualizadoEm DateTime @updatedAt
+
+  @@map("cursos")
+}
+
+model Estudante {
+  id             Int       @id @default(autoincrement())
+  codigo         String    @unique
+  nomeCompleto   String
+  email          String?   @unique
+  telefone       String?
+  dataNascimento DateTime?
+  sexo           String?
+  foto           String?
+  ativo          Boolean   @default(true)
+
+  cursoId          Int
+  curso            Curso               @relation(fields: [cursoId], references: [id])
+  cartoes          CartaoAcademico[]
+  pedidosReemissao PedidoReemissao[]
+  presencas        PresencaAula[]
+  ativacoes        AtivacaoEstudante[]
+
+  usuario Usuario?
+
+  criadoEm     DateTime @default(now())
+  atualizadoEm DateTime @updatedAt
+
+  @@map("estudantes")
+}
+
+model Usuario {
+  id           Int           @id @default(autoincrement())
+  nome         String
+  email        String        @unique
+  senha        String
+  perfil       PerfilUsuario @default(OPERADOR_CARTAO)
+  ativo        Boolean       @default(true)
+  foto         String?
+  criadoEm     DateTime      @default(now())
+  atualizadoEm DateTime      @updatedAt
+
+  pedidosAnalisados PedidoReemissao[]
+
+  auditorias       Auditoria[]
+  sessoesPresenca  SessaoPresenca[]
+
+  estudanteId Int?       @unique
+  estudante   Estudante? @relation(fields: [estudanteId], references: [id])
+
+  @@map("usuarios")
+}
+
+model CartaoAcademico {
+  id           Int    @id @default(autoincrement())
+  numeroCartao String @unique
+  qrToken      String @unique
+
+  dataEmissao  DateTime  @default(now())
+  dataValidade DateTime?
+
+  estado String @default("ATIVO")
+
+  bloqueadoEm    DateTime?
+  motivoBloqueio String?
+
+  estudanteId Int
+  estudante   Estudante @relation(fields: [estudanteId], references: [id])
+
+  pedidosReemissao PedidoReemissao[]
+  presencas        PresencaAula[]
+
+  cartaoAnteriorId Int?             @unique
+  cartaoAnterior   CartaoAcademico? @relation("ReemissaoCartao", fields: [cartaoAnteriorId], references: [id])
+  novoCartao       CartaoAcademico? @relation("ReemissaoCartao")
+
+  criadoEm     DateTime @default(now())
+  atualizadoEm DateTime @updatedAt
+
+  @@map("cartoes_academicos")
+}
+
+enum PerfilUsuario {
+  ADMIN
+  PROFESSOR
+  OPERADOR_CARTAO
+  RESPONSAVEL
+  ESTUDANTE
+}
+
+
+enum EstadoPedidoReemissao {
+  PENDENTE
+  EM_ANALISE
+  APROVADO
+  EM_PRODUCAO
+  PRONTO_LEVANTAMENTO
+  ENTREGUE
+  REJEITADO
+  CONCLUIDO
+}
+
+model PedidoReemissao {
+  id Int @id @default(autoincrement())
+
+  motivo    String
+  documento String?
+
+  estado EstadoPedidoReemissao @default(PENDENTE)
+
+  observacao String?
+
+  estudanteId Int
+  estudante   Estudante @relation(fields: [estudanteId], references: [id])
+
+  cartaoId Int
+  cartao   CartaoAcademico @relation(fields: [cartaoId], references: [id])
+
+  responsavelId Int?
+  responsavel   Usuario? @relation(fields: [responsavelId], references: [id])
+
+  analisadoEm DateTime?
+
+  localLevantamento String?
+  prontoEm          DateTime?
+  entregueEm        DateTime?
+
+  concluidoEm DateTime?
+
+  criadoEm     DateTime @default(now())
+  atualizadoEm DateTime @updatedAt
+
+  @@map("pedidos_reemissao")
+}
+
+model AtivacaoEstudante {
+  id Int @id @default(autoincrement())
+
+  tokenHash String
+
+  estado EstadoAtivacao @default(PENDENTE)
+
+  estudanteId Int
+  estudante   Estudante @relation(fields: [estudanteId], references: [id])
+
+  expiraEm DateTime
+
+  utilizadoEm DateTime?
+
+  tentativas Int @default(0)
+
+  criadoEm DateTime @default(now())
+
+  @@index([estudanteId])
+  @@index([expiraEm])
+  @@map("ativacoes_estudante")
+}
+
+enum EstadoAtivacao {
+  PENDENTE
+  UTILIZADO
+  EXPIRADO
+}
+
+enum TipoSessaoPresenca {
+  AULA
+  TESTE
+}
+
+enum EstadoPresenca {
+  PRESENTE
+  ATRASADO
+  NAO_ADMITIDO
+}
+
+model Auditoria {
+  id          Int      @id @default(autoincrement())
+  acao        String
+  modulo      String
+  entidadeId  Int?
+  descricao   String?
+  usuarioId   Int?
+  criadoEm    DateTime @default(now())
+
+  usuario Usuario? @relation(fields: [usuarioId], references: [id], onDelete: SetNull)
+
+  @@index([usuarioId])
+  @@index([modulo])
+  @@index([criadoEm])
+  @@map("auditorias")
+}
+
+model SessaoPresenca {
+  id                    Int                  @id @default(autoincrement())
+  disciplina            String
+  turma                 String?
+  tipo                  TipoSessaoPresenca   @default(AULA)
+  horaInicio            DateTime             @default(now())
+  toleranciaMinutos     Int                  @default(15)
+  limiteEntradaMinutos  Int                  @default(30)
+  duracaoMinutos        Int?
+  abertaEm              DateTime             @default(now())
+  fechadaEm             DateTime?
+  professorId           Int
+  professor             Usuario              @relation(fields: [professorId], references: [id])
+  presencas             PresencaAula[]
+
+  criadoEm     DateTime @default(now())
+  atualizadoEm DateTime @updatedAt
+
+  @@index([professorId])
+  @@index([fechadaEm])
+  @@map("sessoes_presenca")
+}
+
+model PresencaAula {
+  id          Int            @id @default(autoincrement())
+  sessaoId    Int
+  sessao      SessaoPresenca @relation(fields: [sessaoId], references: [id], onDelete: Cascade)
+  estudanteId Int
+  estudante   Estudante      @relation(fields: [estudanteId], references: [id])
+  cartaoId    Int
+  cartao      CartaoAcademico @relation(fields: [cartaoId], references: [id])
+  registadaEm DateTime       @default(now())
+  estado      EstadoPresenca @default(PRESENTE)
+  minutosAtraso Int           @default(0)
+
+  @@unique([sessaoId, estudanteId])
+  @@index([estudanteId])
+  @@index([cartaoId])
+  @@map("presencas_aula")
+}
