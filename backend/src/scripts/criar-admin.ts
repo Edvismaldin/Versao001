@@ -6,8 +6,16 @@ import { criarAdaptadorMariaDb } from '../prisma/mariadb.adapter.js';
 const prisma = new PrismaClient({ adapter: criarAdaptadorMariaDb() });
 
 async function main() {
-  const email = 'edvisjoaochibante2002@gmail.com';
-  const senhaInicial = 'Admin@12345';
+  const email = process.env.ADMIN_EMAIL;
+  const senhaInicial = process.env.ADMIN_INITIAL_PASSWORD;
+
+  if (!email) {
+    throw new Error('ADMIN_EMAIL não definida.');
+  }
+
+  if (!senhaInicial) {
+    throw new Error('ADMIN_INITIAL_PASSWORD não definida.');
+  }
 
   const senhaHash = await bcrypt.hash(senhaInicial, 12);
 

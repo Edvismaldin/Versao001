@@ -752,9 +752,9 @@ export class CartoesService {
     documento
       .fillColor('#D9E8F7')
       .font('Helvetica-Bold')
-      .fontSize(7)
-      .text('UCM', x + largura - 34, y + 17, {
-        width: 23,
+      .fontSize(8.4)
+      .text('UCM', x + largura - 40, y + 16, {
+        width: 30,
         align: 'center',
       });
 
@@ -816,21 +816,43 @@ export class CartoesService {
     documento
       .fillColor('#64748B')
       .font('Helvetica-Bold')
-      .fontSize(4.7)
-      .text('ESCANEAR PARA VALIDAR', x + largura - 85, y + 120, {
-        width: 64,
+      .fontSize(5.2)
+      .text('ESCANEAR PARA VALIDAR', x + largura - 88, y + 120, {
+        width: 70,
         align: 'center',
         characterSpacing: 0.45,
       });
 
+    // Selo legível de segurança: mantém-se visível mesmo em impressão CR80.
     documento
-      .fillColor('#64748B')
+      .roundedRect(x + largura - 91, y + 132, 76, 14, 4)
+      .fill('#EAF4FB');
+
+    documento
+      .circle(x + largura - 82, y + 139, 4)
+      .fill(azul);
+
+    documento
+      .fillColor('#FFFFFF')
       .font('Helvetica-Bold')
-      .fontSize(4.6)
-      .text('SEGURO  •  VERIFICÁVEL', x + largura - 88, y + 132, {
-        width: 68,
+      .fontSize(5.6)
+      .text('✓', x + largura - 84.1, y + 135.6, { width: 5, align: 'center' });
+
+    documento
+      .fillColor(azul)
+      .font('Helvetica-Bold')
+      .fontSize(5.9)
+      .text('SEGURO', x + largura - 75, y + 134.5, { width: 31 })
+      .fontSize(5.3)
+      .text('VERIFICÁVEL', x + largura - 75, y + 141, { width: 42 });
+
+    documento
+      .fillColor('#315B83')
+      .font('Helvetica-Bold')
+      .fontSize(6.6)
+      .text('UCM', x + largura - 42, y + 137, {
+        width: 20,
         align: 'center',
-        characterSpacing: 0.25,
       });
   }
 
