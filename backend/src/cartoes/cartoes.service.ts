@@ -545,20 +545,20 @@ export class CartoesService {
       .stroke();
 
     // Identidade UCM: azul institucional, com o dourado apenas como acento.
-    documento.rect(x, y, largura, 40).fill(azulEscuro);
-    documento.rect(x, y + 40, largura, 2).fill(ouro);
+    documento.rect(x, y, largura, 42).fill(azulEscuro);
+    documento.rect(x, y + 42, largura, 2).fill(ouro);
 
     this.desenharSeloUcm(documento, x + 12, y + 10, 24);
 
     documento
       .fillColor('#FFFFFF')
       .font('Helvetica-Bold')
-      .fontSize(9)
+      .fontSize(9.6)
       .text('Universidade Católica', x + 44, y + 9, {
-        width: 120,
+        width: 132,
       })
       .font('Helvetica')
-      .fontSize(7)
+      .fontSize(7.2)
       .text('de Moçambique', x + 44, y + 22, {
         width: 110,
       });
@@ -566,17 +566,17 @@ export class CartoesService {
     documento
       .fillColor('#D9E8F7')
       .font('Helvetica-Bold')
-      .fontSize(7)
-      .text('UCM', x + largura - 36, y + 17, {
-        width: 23,
+      .fontSize(8.4)
+      .text('UCM', x + largura - 40, y + 16, {
+        width: 30,
         lineBreak: false,
         align: 'center',
       });
 
-    const fotoX = x + 14;
-    const fotoY = y + 50;
-    const fotoLargura = 58;
-    const fotoAltura = 65;
+    const fotoX = x + 13;
+    const fotoY = y + 51;
+    const fotoLargura = 61;
+    const fotoAltura = 66;
 
     documento
       .roundedRect(fotoX, fotoY, fotoLargura, fotoAltura, 7)
@@ -618,10 +618,17 @@ export class CartoesService {
     }
 
     documento
-      .fillColor(ouro)
+      .fillColor('#64748B')
       .font('Helvetica-Bold')
-      .fontSize(6)
-      .text('IDENTIFICAÇÃO ACADÉMICA', x + 82, y + 50, {
+      .fontSize(5.2)
+      .text('FOTOGRAFIA OFICIAL', fotoX + 2, y + 117, {
+        width: fotoLargura - 4,
+        align: 'center',
+        characterSpacing: 0.35,
+      })
+      .fillColor(ouro)
+      .fontSize(6.2)
+      .text('IDENTIFICAÇÃO ACADÉMICA', x + 85, y + 51, {
         width: 146,
         characterSpacing: 0.7,
       });
@@ -629,9 +636,9 @@ export class CartoesService {
     documento
       .fillColor('#0F172A')
       .font('Helvetica-Bold')
-      .fontSize(10)
-      .text(cartao.estudante.nomeCompleto, x + 82, y + 61, {
-        width: 146,
+      .fontSize(10.4)
+      .text(cartao.estudante.nomeCompleto, x + 85, y + 63, {
+        width: 141,
         height: 24,
         ellipsis: true,
       });
@@ -639,12 +646,12 @@ export class CartoesService {
     documento
       .fillColor('#64748B')
       .fontSize(6.8)
-      .text('CÓDIGO', x + 82, y + 87, { width: 80 })
-      .text('FACULDADE', x + 166, y + 87, { width: 65 });
+      .text('CÓDIGO', x + 85, y + 89, { width: 76 })
+      .text('FACULDADE', x + 166, y + 89, { width: 60 });
 
     documento
-      .moveTo(x + 160, y + 87)
-      .lineTo(x + 160, y + 105)
+      .moveTo(x + 160, y + 89)
+      .lineTo(x + 160, y + 107)
       .strokeColor('#D7E2EE')
       .lineWidth(0.7)
       .stroke();
@@ -653,36 +660,36 @@ export class CartoesService {
       .fillColor(azul)
       .font('Helvetica-Bold')
       .fontSize(8)
-      .text(cartao.estudante.codigo, x + 82, y + 96, { width: 80, height: 10, ellipsis: true })
-      .text(cartao.estudante.curso.faculdade.sigla, x + 166, y + 96, { width: 65, height: 10, ellipsis: true });
+      .text(cartao.estudante.codigo, x + 85, y + 98, { width: 72, height: 10, ellipsis: true })
+      .text(cartao.estudante.curso.faculdade.sigla, x + 166, y + 98, { width: 60, height: 10, ellipsis: true });
 
     documento
       .fillColor('#64748B')
       .fontSize(6.8)
-      .text('CURSO', x + 82, y + 108, { width: 30 });
+      .text('CURSO', x + 85, y + 111, { width: 30 });
 
     documento
       .fillColor('#0F172A')
       .font('Helvetica-Bold')
       .fontSize(6.5)
-      .text(cartao.estudante.curso.nome, x + 112, y + 108, {
-        width: 118,
+      .text(cartao.estudante.curso.nome, x + 115, y + 111, {
+        width: 111,
         height: 10,
         ellipsis: true,
       });
 
     // Barra inferior azul
-    documento.rect(x, y + altura - 28, largura, 28).fill(azul);
+    documento.rect(x, y + altura - 29, largura, 29).fill(azul);
 
     documento
       .fillColor('#BFD7EE')
       .font('Helvetica-Bold')
       .fontSize(5.8)
-      .text('NÚMERO DO CARTÃO', x + 13, y + altura - 22, {
+      .text('NÚMERO DO CARTÃO', x + 13, y + altura - 23, {
         characterSpacing: 1,
         lineBreak: false,
       })
-      .text('VÁLIDO ATÉ', x + largura - 58, y + altura - 22, {
+      .text('VALIDADE', x + largura - 58, y + altura - 23, {
         width: 42,
         align: 'right',
         characterSpacing: 1,
